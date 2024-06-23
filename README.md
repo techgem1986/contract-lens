@@ -32,7 +32,8 @@
 <li>Go to the directory /home/ec2-user/contract-lens/python</li>
 <li>Install the required libraries</li>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i>pip install -r requirements.txt</i>
-<li>start the python app</li>
+<li>Run aws configure to create the credential file</li>
+<li>Start the python app</li>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i>python3 -m uvicorn app:app</i>
 
 
