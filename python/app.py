@@ -12,7 +12,7 @@ async def root():
 
 @app.get("/sagemaker_endpoint")
 async def sagemaker_endpoint():
-    session = boto3.Session(profile_name="techgem1986")
+    session = boto3.Session()
     sagemaker_client = session.client("sagemaker")
     response = sagemaker_client.list_endpoints()
     return response
