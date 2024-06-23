@@ -1,9 +1,14 @@
-import boto3
-from fastapi import FastAPI
-import uvicorn
 import json
+import boto3
+import uvicorn
+from fastapi import FastAPI
+
+from s3_util import download_files_from_s3
+from pdf_util import load_pdf_files_from_directory
 
 app = FastAPI()
+
+session = boto3.Session(profile_name="default")
 
 
 @app.get("/")
@@ -13,7 +18,6 @@ async def root():
 
 @app.get("/predict/")
 async def predict(prompt=None):
-    session = boto3.Session(profile_name="default")
     runtime = session.client("runtime.sagemaker")
     llm_endpoint = "mistral-llm"
     if prompt is not None:
@@ -25,4 +29,6 @@ async def predict(prompt=None):
 
 
 if __name__ == "__main__":
+    download_files_from_s3(session)
+    text = load_pdf_files_from_directory("contracts")
     uvicorn.run(app, host="127.0.0.1", port=8000)
