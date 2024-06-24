@@ -2,3 +2,9 @@ boto3
 uvicorn
 fastapi
 pypdf2
+langchain-community
+langchain
+langchain-huggingface
+faiss-cpu
+numpy
+sentence-transformers
