@@ -22,16 +22,19 @@ def load_documents(session):
 
 def load_pdf_files_from_directory(directory):
     list_of_documents = []
+    doc_id = 0
     for file in glob.glob(directory + "/*.pdf"):
         if file.endswith('.pdf'):
+            doc_id = doc_id + 1
+            doc_name = file.split(os.path.sep)[1]
             file_reader = PyPDF2.PdfReader(file)
             for i, page in enumerate(file_reader.pages):
                 chunks = get_text_chunks(page.extract_text())
                 for j, chunk in enumerate(chunks):
                     document = Document(
                         page_content=chunk,
-                        metadata={"source": file.split(os.path.sep)[1], "page": i, "sector": "Automobile",
-                                  "region": "APAC", "genre": "Contract"},
+                        metadata={"source": doc_name, "page": i, "sector": "Automobile",
+                                  "region": "APAC", "genre": "Contract", "id": doc_id},
                     )
                     list_of_documents.append(document)
     return list_of_documents

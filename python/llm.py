@@ -4,6 +4,7 @@ from langchain.prompts import PromptTemplate
 from typing import Dict
 import json
 from langchain.chains import RetrievalQA
+from custom_retriever import CustomRetriever
 
 prompt_template = """
 You are an AI chatbot. You can read documents and provide accurate information based on the source.
@@ -52,11 +53,13 @@ def get_conversation_chain(session, vector_db):
     return llm
 
 
-def get_llm_chain(llm, vector, source):
+def get_llm_chain(llm, vector, id):
+    filtered_retriever = CustomRetriever(vectorstore=vector.as_retriever())
+    filtered_retriever.search_kwargs = {'filter': {'id': id}}
     llm_chain = RetrievalQA.from_chain_type(
         llm=llm,
         chain_type="stuff",
-        retriever=vector.as_retriever(search_kwargs={"k": 4}),
+        retriever=filtered_retriever,
         return_source_documents=True,
         chain_type_kwargs={"prompt": prompt},
     )

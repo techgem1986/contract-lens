@@ -7,7 +7,6 @@ from loader import load_documents
 from llm import get_conversation_chain, get_llm_chain
 from typing import List
 
-
 app = FastAPI()
 session = boto3.Session(profile_name="default")
 llm = None
@@ -20,13 +19,22 @@ async def root():
 
 
 @app.get("/search/")
-async def search(prompt=None):
+async def search(prompt=None, region=None, sector=None):
+    search_kwargs = {'k': 4}
+    if region is not None and sector is None:
+        search_kwargs = {'filter': {'region': region}}
+    elif region is None and sector is not None:
+        search_kwargs = {'filter': {'sector': sector}}
+    else:
+        search_kwargs = {'filter': {'sector': sector, 'region': region}}
+
+    vector_store_retriever = vector.as_retriever(search_kwargs=search_kwargs)
     if prompt is not None:
-        docs = vector.similarity_search_with_score(prompt)
+        docs = vector_store_retriever.invoke(prompt)
         response = []
         for doc in docs:
-            data = {'content': doc[0].page_content, 'source': doc[0].metadata["source"],
-                    'sector': doc[0].metadata["sector"], 'region': doc[0].metadata["region"]}
+            data = {'id': doc.metadata['id'], 'content': doc.page_content, 'source': doc.metadata["source"],
+                    'sector': doc.metadata["sector"], 'region': doc.metadata["region"]}
             response.append(data)
         return json.dumps(response)
     else:
@@ -41,9 +49,9 @@ async def compare(files: List[UploadFile] = File(...)):
 
 
 @app.get("/chat/")
-async def chat(prompt=None, source=None):
-    if prompt is not None and source is not None:
-        llm_chain = get_llm_chain(llm, vector, source)
+async def chat(prompt=None, id=None):
+    if prompt is not None:
+        llm_chain = get_llm_chain(llm, vector, id)
         answer = llm_chain({"query": prompt})
         return answer['result'].split('[/INST]')[0]
     else:
