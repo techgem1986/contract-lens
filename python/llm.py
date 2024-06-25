@@ -1,9 +1,9 @@
 from langchain_community.llms import SagemakerEndpoint
 from langchain_community.llms.sagemaker_endpoint import LLMContentHandler
 from langchain.prompts import PromptTemplate
-from langchain.chains import RetrievalQA
 from typing import Dict
 import json
+from langchain.chains import RetrievalQA
 
 prompt_template = """
 You are an AI chatbot. You can read documents and provide accurate information based on the source.
@@ -49,10 +49,15 @@ def get_conversation_chain(session, vector_db):
         content_handler=content_handler,
         client=sm_client,
     )
-    return RetrievalQA.from_chain_type(
+    return llm
+
+
+def get_llm_chain(llm, vector, source):
+    llm_chain = RetrievalQA.from_chain_type(
         llm=llm,
         chain_type="stuff",
-        retriever=vector_db.as_retriever(search_kwargs={"k": 4}),
+        retriever=vector.as_retriever(search_kwargs={"k": 4}),
         return_source_documents=True,
         chain_type_kwargs={"prompt": prompt},
     )
+    return llm_chain

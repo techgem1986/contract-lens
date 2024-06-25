@@ -1,7 +1,5 @@
 from pathlib import Path
 
-s3_bucket_name = "contractlens"
-s3_bucket_prefix = "contracts"
 local_dir = "."
 
 
@@ -50,7 +48,7 @@ def download_files(s3_client, bucket_name, local_path, file_names, folders):
         )
 
 
-def download_files_from_s3(session):
+def download_files_from_s3(session, s3_bucket_name, s3_bucket_prefix):
     client = session.client("s3")
     file_names, folders = get_file_folders(client, s3_bucket_name, s3_bucket_prefix)
     download_files(client, s3_bucket_name, local_dir, file_names, folders)

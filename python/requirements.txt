@@ -5,6 +5,7 @@ pypdf2
 langchain-community
 langchain
 langchain-huggingface
+langchain-core
 faiss-cpu
 numpy
 sentence-transformers
