@@ -13,6 +13,7 @@ s3_bucket_prefix = "contracts"
 
 
 def load_documents(session):
+    print("Loading documents")
     embedding = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
     download_files_from_s3(session, s3_bucket_name, s3_bucket_prefix)
     list_of_documents = load_pdf_files_from_directory(s3_bucket_prefix)

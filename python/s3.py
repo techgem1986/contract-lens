@@ -49,6 +49,7 @@ def download_files(s3_client, bucket_name, local_path, file_names, folders):
 
 
 def download_files_from_s3(session, s3_bucket_name, s3_bucket_prefix):
+    print("Downloading files from S3")
     client = session.client("s3")
     file_names, folders = get_file_folders(client, s3_bucket_name, s3_bucket_prefix)
     download_files(client, s3_bucket_name, local_dir, file_names, folders)
