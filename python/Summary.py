@@ -45,7 +45,7 @@ def format_summary(summary):
     return formatted_summary
 
 # Function to summarize text using a transformer model
-def summarize_text(text, model_name="bart-large-cnn", max_length=512, min_length=50):
+def summarize_text(text, model_name="facebook/bart-large-cnn", max_length=512, min_length=50):
     summarizer = pipeline("summarization", model=model_name)
     chunks = split_text(text)
     # Limit the number of chunks to summarize
