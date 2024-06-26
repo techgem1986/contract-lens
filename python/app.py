@@ -15,6 +15,8 @@ vector = None
 
 @app.get("/")
 async def root():
+    vector = load_documents(session)
+    llm = get_conversation_chain(session, vector)
     return {"message": "Welcome to Contract Lens"}
 
 
@@ -66,6 +68,4 @@ async def get_documents():
 
 
 if __name__ == "__main__":
-    vector = load_documents(session)
-    llm = get_conversation_chain(session, vector)
     uvicorn.run(app, host="127.0.0.1", port=8000)
