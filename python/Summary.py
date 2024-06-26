@@ -70,7 +70,7 @@ def summarize_pdf(pdf_path):
     return formatted_summary
 
 # Path to the PDF file
-pdf_path = 'your_pdf_file.pdf'
+pdf_path = 'sample_contracts/MIZUHO FINANCIAL GROUP.pdf'
 
 # Summarize the PDF and print the summary
 summary = summarize_pdf(pdf_path)
