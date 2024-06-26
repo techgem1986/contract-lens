@@ -8,3 +8,6 @@ langchain-huggingface
 langchain-core
 faiss-cpu
 sentence-transformers
+torch
+transformers
+PyMuPDF
