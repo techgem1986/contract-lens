@@ -5,6 +5,8 @@ from typing import Dict
 import json
 from langchain.chains import RetrievalQA
 from custom_retriever import CustomRetriever
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.vectorstores import FAISS
 
 prompt_template = """
 You are an AI chatbot. You can read documents and provide accurate information based on the source.
@@ -54,6 +56,8 @@ def get_conversation_chain(session, vector_db):
 
 
 def get_llm_chain(llm, vector, id):
+    embedding = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+    vector = FAISS.load_local("faiss_index", embedding, allow_dangerous_deserialization=True)
     filtered_retriever = CustomRetriever(vectorstore=vector.as_retriever())
     filtered_retriever.search_kwargs = {'filter': {'id': id}}
     llm_chain = RetrievalQA.from_chain_type(

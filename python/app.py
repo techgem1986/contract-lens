@@ -6,6 +6,8 @@ import os
 from loader import load_documents
 from llm import get_conversation_chain, get_llm_chain
 from typing import List
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.vectorstores import FAISS
 
 app = FastAPI()
 session = boto3.Session(profile_name="default")
@@ -29,7 +31,9 @@ async def search(prompt=None, region=None, sector=None):
         search_kwargs = {'filter': {'sector': sector}}
     else:
         search_kwargs = {'filter': {'sector': sector, 'region': region}}
-
+    
+    embedding = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+    vector = FAISS.load_local("faiss_index", embedding, allow_dangerous_deserialization=True)
     vector_store_retriever = vector.as_retriever(search_kwargs=search_kwargs)
     if prompt is not None:
         docs = vector_store_retriever.invoke(prompt)
@@ -43,16 +47,17 @@ async def search(prompt=None, region=None, sector=None):
         return "Please provide a prompt"
 
 
-@app.post("/compare/")
-async def compare(files: List[UploadFile] = File(...)):
-    for file in files:
-        print(file.filename)
+@app.get("/compare/")
+async def compare(file1=None, file2=None):
     return "Functionality to be implemented"
 
 
 @app.get("/chat/")
 async def chat(prompt=None, id=None):
     if prompt is not None:
+        embedding = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+        vector = FAISS.load_local("faiss_index", embedding, allow_dangerous_deserialization=True)
+        llm = get_conversation_chain(session, vector)
         llm_chain = get_llm_chain(llm, vector, id)
         answer = llm_chain({"query": prompt})
         return answer['result'].split('[/INST]')[0]
