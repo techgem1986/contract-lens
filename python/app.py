@@ -11,8 +11,8 @@ from langchain_community.vectorstores import FAISS
 
 app = FastAPI()
 session = boto3.Session(profile_name="default")
-global llm
-global vector
+llm = None
+vector = None
 
 
 @app.get("/")
@@ -32,8 +32,8 @@ async def search(prompt=None, region=None, sector=None):
     else:
         search_kwargs = {'filter': {'sector': sector, 'region': region}}
     
-    # embedding = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-    # vector = FAISS.load_local("faiss_index", embedding, allow_dangerous_deserialization=True)
+    embedding = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+    vector = FAISS.load_local("faiss_index", embedding, allow_dangerous_deserialization=True)
     vector_store_retriever = vector.as_retriever(search_kwargs=search_kwargs)
     if prompt is not None:
         docs = vector_store_retriever.invoke(prompt)
@@ -55,9 +55,9 @@ async def compare(file1=None, file2=None):
 @app.get("/chat/")
 async def chat(prompt=None, id=None):
     if prompt is not None:
-        # embedding = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-        # vector = FAISS.load_local("faiss_index", embedding, allow_dangerous_deserialization=True)
-        # llm = get_conversation_chain(session, vector)
+        embedding = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+        vector = FAISS.load_local("faiss_index", embedding, allow_dangerous_deserialization=True)
+        llm = get_conversation_chain(session, vector)
         llm_chain = get_llm_chain(llm, vector, id)
         answer = llm_chain({"query": prompt})
         return answer['result'].split('[/INST]')[0]
